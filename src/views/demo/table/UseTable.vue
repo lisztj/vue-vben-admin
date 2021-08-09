@@ -6,6 +6,7 @@
       <a-button class="mr-2" @click="changeColumns"> 更改Columns </a-button>
       <a-button class="mr-2" @click="getColumn"> 获取Columns </a-button>
       <a-button class="mr-2" @click="getTableData"> 获取表格数据 </a-button>
+      <a-button class="mr-2" @click="getTableRawData"> 获取接口原始数据 </a-button>
       <a-button class="mr-2" @click="setPaginationInfo"> 跳转到第2页 </a-button>
     </div>
     <div class="mb-4">
@@ -20,7 +21,7 @@
 </template>
 <script lang="ts">
   import { defineComponent } from 'vue';
-  import { BasicTable, useTable } from '/@/components/Table';
+  import { BasicTable, ColumnChangeParam, useTable } from '/@/components/Table';
   import { getBasicColumns, getBasicShortColumns } from './tableData';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { demoListApi } from '/@/api/demo/table';
@@ -28,6 +29,9 @@
     components: { BasicTable },
     setup() {
       const { createMessage } = useMessage();
+      function onChange() {
+        console.log('onChange', arguments);
+      }
       const [
         registerTable,
         {
@@ -35,6 +39,7 @@
           setColumns,
           getColumns,
           getDataSource,
+          getRawDataSource,
           reload,
           getPaginationRef,
           setPagination,
@@ -51,8 +56,12 @@
         columns: getBasicColumns(),
         rowKey: 'id',
         showTableSetting: true,
+        onChange,
         rowSelection: {
           type: 'checkbox',
+        },
+        onColumnsChange: (data: ColumnChangeParam[]) => {
+          console.log('ColumnsChanged', data);
         },
       });
 
@@ -80,6 +89,11 @@
       function getTableData() {
         createMessage.info('请在控制台查看！');
         console.log(getDataSource());
+      }
+
+      function getTableRawData() {
+        createMessage.info('请在控制台查看！');
+        console.log(getRawDataSource());
       }
 
       function getPagination() {
@@ -115,12 +129,14 @@
         reloadTable,
         getColumn,
         getTableData,
+        getTableRawData,
         getPagination,
         setPaginationInfo,
         getSelectRowList,
         getSelectRowKeyList,
         setSelectedRowKeyList,
         clearSelect,
+        onChange,
       };
     },
   });

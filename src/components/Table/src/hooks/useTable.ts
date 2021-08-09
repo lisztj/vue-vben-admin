@@ -3,7 +3,6 @@ import type { PaginationProps } from '../types/pagination';
 import type { DynamicProps } from '/#/utils';
 import type { FormActionType } from '/@/components/Form';
 import type { WatchStopHandle } from 'vue';
-
 import { getDynamicProps } from '/@/utils';
 import { ref, onUnmounted, unref, watch, toRaw } from 'vue';
 import { isProdMode } from '/@/utils/env';
@@ -15,9 +14,7 @@ type UseTableMethod = TableActionType & {
   getForm: () => FormActionType;
 };
 
-export function useTable(
-  tableProps?: Props
-): [
+export function useTable(tableProps?: Props): [
   (instance: TableActionType, formInstance: UseTableMethod) => void,
   TableActionType & {
     getForm: () => FormActionType;
@@ -85,6 +82,9 @@ export function useTable(
     getDataSource: () => {
       return getTableInstance().getDataSource();
     },
+    getRawDataSource: () => {
+      return getTableInstance().getRawDataSource();
+    },
     getColumns: ({ ignoreIndex = false }: { ignoreIndex?: boolean } = {}) => {
       const columns = getTableInstance().getColumns({ ignoreIndex }) || [];
       return toRaw(columns);
@@ -122,6 +122,12 @@ export function useTable(
     updateTableData: (index: number, key: string, value: any) => {
       return getTableInstance().updateTableData(index, key, value);
     },
+    updateTableDataRecord: (rowKey: string | number, record: Recordable) => {
+      return getTableInstance().updateTableDataRecord(rowKey, record);
+    },
+    findTableDataRecord: (rowKey: string | number) => {
+      return getTableInstance().findTableDataRecord(rowKey);
+    },
     getRowSelection: () => {
       return toRaw(getTableInstance().getRowSelection());
     },
@@ -129,7 +135,7 @@ export function useTable(
       return toRaw(getTableInstance().getCacheColumns());
     },
     getForm: () => {
-      return (unref(formRef) as unknown) as FormActionType;
+      return unref(formRef) as unknown as FormActionType;
     },
     setShowPagination: async (show: boolean) => {
       getTableInstance().setShowPagination(show);
